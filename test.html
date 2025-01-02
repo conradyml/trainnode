@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> 
+<meta name="mobile-web-app-capable" content="yes">
+<title>Test Control</title>
+<style type="text/css"> 
+  
+  * {
+	  -webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
+	  -webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
+	/* make transparent link selection, adjust last value opacity 0 to 1.0 */
+	  -webkit-tap-highlight-color: rgba(0,0,0,0); 
+	  -webkit-user-select: none; /* prevent copy paste, to allow, change 'none' to 'text' */
+	  -webkit-tap-highlight-color: rgba(0,0,0,0); 
+	}
+	
+	body {
+		background-color: #000000;
+		margin: 0px;
+	}
+   #messages{
+     color:white;
+   }
+	.container {
+		width:auto;
+		text-align:center;
+		background-color:#ff0000;
+	}
+	
+	.cam_button {
+		display:inline-block;
+		height:80px;
+		width:80px;
+		background-color: transparent;
+		border-radius: 100%;
+		border: 7px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+		font-size: 16px;
+		cursor: pointer;
+	}
+	
+	.cam_button:active {
+		background-color: gray;
+	}
+  
+ 
+	.sidenav {
+		color: #fff;
+		height: 100%;
+		width: 13%;
+		min-width:150px;
+		position: fixed;
+		z-index: 0;
+		top: 0px;
+		background-color: #111;
+		overflow-x: hidden;
+		padding-top: 20px;
+		padding-left: 5px;
+		padding-right: 5px;
+		font-family: 'Roboto', sans-serif;
+		text-align:center;
+	}
+	
+	.slidecontainer {
+	width: 100%; /* Width of the outside container */
+	}
+	
+	.onoff {
+	width: 90%; 
+	text-align: right;
+	padding-top: 5px;
+	margin-bottom:20px;
+	margin-top:20px;
+	}
+	.onoff_label {
+	vertical-align: middle;
+	padding-right:20px;
+	}
+
+
+
+</style>
+<style type="text/css"> 
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 34px;
+  vertical-align: -webkit-baseline-middle;
+  margin-bottom:20px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(46px);
+  -ms-transform: translateX(46px);
+  transform: translateX(46px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>
+<style type="text/css">
+ 	/* toggle switch (source: http://callmenick.com/post/css-toggle-switch-examples) */
+	.cmn-toggle {
+		position: absolute;
+		margin-left: -9999px;
+		visibility: hidden;
+	}
+	.cmn-toggle + label {
+		display: block;
+		position: relative;
+		cursor: pointer;
+		outline: none;
+		user-select: none;
+	}
+	input.cmn-toggle-round-flat + label {
+  	background-color: transparent;
+		border-radius: 100%;
+		border: 5px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+		
+		padding-top: 40%;
+    padding-bottom: 40%;
+    padding-left: 00%;
+    padding-right: 00%;
+		font-size: 16px;
+		margin: 50% 3% 4% 4%;
+		cursor: pointer;
+		transition: background 0.4s;
+	}
+	input.cmn-toggle-round-flat:checked + label {
+		background-color: gray;
+	}
+	
+  .light_button {
+  	background-color: transparent;
+		border-radius: 10%;
+		border: 2px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+    
+		padding-top: 20%;
+    padding-bottom: 20%;
+    font-size: 16px;
+		margin: 40% 7% 10%;
+		cursor: pointer;
+	}
+	.light_button:checked {
+  	background-color: #b1b;
+	}
+</style>
+
+
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io(); // comment this out for better debugging
+var sendFlag = false;
+
+function init(){
+	
+	
+	socket.on('message', function(msg){
+		console.log("message returned from server:"+msg)
+		const list = document.getElementById('messages');
+		const newItem = document.createElement('li');
+		newItem.textContent = msg;
+		list.appendChild(newItem);
+
+	});
+	
+}
+	
+function fireOnReady() { 
+	// execute after DOM is loaded
+
+	init();
+}
+
+if (document.readyState === 'complete') {
+    fireOnReady();
+} else {
+    document.addEventListener("DOMContentLoaded", fireOnReady);
+}
+
+function handleButton(button,action) {
+   socket.emit(button.id, action);
+}
+function handleSlider(cb) {
+   socket.emit(cb.id, cb.checked);
+}
+</script>
+<body scroll="no" style="overflow: hidden">
+<center>
+<ul id="messages"></ul>
+<p id="stream">Some web stream here!</p>
+</center>
+
+<div class="sidenav">
+
+  <div id="title">
+  Test Buttons
+  </div>
+  
+  <br/>
+ <div class="cam_button" id="button" type="button" onmousedown="handleButton(this,'on');" onmouseup="handleButton(this,'off');"><br/>Button</div>
+  <br/>
+
+<div>
+		<span class="onoff_label"> Slider</span>
+		<label for="lights" class="switch">
+			<input id="slider" type="checkbox" onclick="handleSlider(this)">
+			<span class="slider round"></span>
+		</label>
+	</div>
+</div>
+</body>
+</html>
