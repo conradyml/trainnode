@@ -1,0 +1,28 @@
+{
+  "name": "trainnode",
+  "version": "1.0.0",
+  "description": "DCC Control Interface for Raspberry Pi with PIC interface",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conradyml/trainnode.git"
+  },
+  "keywords": [
+    "DCC",
+    "Node",
+    "Pi"
+  ],
+  "author": "conradyml",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/conradyml/trainnode/issues"
+  },
+  "homepage": "https://github.com/conradyml/trainnode#readme",
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}
