@@ -23,8 +23,7 @@
   "homepage": "https://github.com/conradyml/trainnode#readme",
   "dependencies": {
     "express": "^4.21.2",
-    "raspi": "^6.0.1",
-    "raspi-i2c": "^6.2.4",
+    "i2c-bus": "^5.2.3",
     "socket.io": "^4.8.1"
   }
 }
