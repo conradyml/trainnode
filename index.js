@@ -3,6 +3,10 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 // requires node packages: express and socket.io
+const i2c = require('i2c-bus');
+
+const PIC_ADDR = 0x21;
+const DCC_REG = 0x03;
 
 
 // configure additional node packages / components..
@@ -24,9 +28,14 @@ io.on('connection', function(socket){
 socket.on('button', function(toggle) {
 	if (toggle=="on") {
 		console.log("A button was pushed");	
-		buttonTouch();
+		buttonTouch("Turning Light Off");
+		// lights on
+        sendI2c([0x80]);
 	}else {
 		console.log("A button was released");	
+		buttonTouch("Turning Light On");
+		// lights on
+        sendI2c([0x9F]);
 	}
 }); 
 
@@ -51,10 +60,17 @@ socket.on('slider', function(toggle) {
 // *******************************************
 // *  Utility Functions
 
-function buttonTouch(){
-	io.emit('message',"A button was pushed!");
+function buttonTouch(msg){
+	io.emit('message',msg);
 	console.log('[' + new Date().toLocaleString('en-us') + '] [on buttonTouch] - '+'sending button push message.');
 	
+}
+
+function sendI2c(message){
+	var buffer = Buffer.from(message);
+	const i2c1 = i2c.openSync(1);
+    i2c1.writeI2cBlockSync(PIC_ADDR, DCC_REG, buffer.length, buffer);
+	i2c1.closeSync();
 }
 
 
