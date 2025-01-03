@@ -6,16 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Test Control</title>
 <style type="text/css"> 
-  
-  * {
-	  -webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
-	  -webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
-	/* make transparent link selection, adjust last value opacity 0 to 1.0 */
-	  -webkit-tap-highlight-color: rgba(0,0,0,0); 
-	  -webkit-user-select: none; /* prevent copy paste, to allow, change 'none' to 'text' */
-	  -webkit-tap-highlight-color: rgba(0,0,0,0); 
-	}
-	
+
 	body {
 		background-color: #000000;
 		margin: 0px;
@@ -84,126 +75,6 @@
 
 
 </style>
-<style type="text/css"> 
-/* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 80px;
-  height: 34px;
-  vertical-align: -webkit-baseline-middle;
-  margin-bottom:20px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(46px);
-  -ms-transform: translateX(46px);
-  transform: translateX(46px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-</style>
-<style type="text/css">
- 	/* toggle switch (source: http://callmenick.com/post/css-toggle-switch-examples) */
-	.cmn-toggle {
-		position: absolute;
-		margin-left: -9999px;
-		visibility: hidden;
-	}
-	.cmn-toggle + label {
-		display: block;
-		position: relative;
-		cursor: pointer;
-		outline: none;
-		user-select: none;
-	}
-	input.cmn-toggle-round-flat + label {
-  	background-color: transparent;
-		border-radius: 100%;
-		border: 5px;
-		border-style: solid;
-		border-color: white;
-		text-align:center;
-		
-		padding-top: 40%;
-    padding-bottom: 40%;
-    padding-left: 00%;
-    padding-right: 00%;
-		font-size: 16px;
-		margin: 50% 3% 4% 4%;
-		cursor: pointer;
-		transition: background 0.4s;
-	}
-	input.cmn-toggle-round-flat:checked + label {
-		background-color: gray;
-	}
-	
-  .light_button {
-  	background-color: transparent;
-		border-radius: 10%;
-		border: 2px;
-		border-style: solid;
-		border-color: white;
-		text-align:center;
-    
-		padding-top: 20%;
-    padding-bottom: 20%;
-    font-size: 16px;
-		margin: 40% 7% 10%;
-		cursor: pointer;
-	}
-	.light_button:checked {
-  	background-color: #b1b;
-	}
-</style>
-
 
 </head>
 <script src="/socket.io/socket.io.js"></script>
@@ -237,8 +108,18 @@ if (document.readyState === 'complete') {
     document.addEventListener("DOMContentLoaded", fireOnReady);
 }
 
+function throttle(id,val){
+	socket.emit("throttle",id,val);
+}
+
+function lights(cb,val){
+	socket.emit("lights",val,cb.checked);
+}
+function estop(){
+	socket.emit("estop");
+}
 function handleButton(button,action) {
-   socket.emit(button.id, action);
+   socket.emit(utton.id, action);
 }
 function handleSlider(cb) {
    socket.emit(cb.id, cb.checked);
@@ -258,16 +139,29 @@ Messages
   </div>
   
   <br/>
- <div class="cam_button" id="button" type="button" onmousedown="handleButton(this,'on');" onmouseup="handleButton(this,'off');"><br/>Button</div>
+  <div class="cam_button" id="button1" type="button" onClick="throttle(0x03,0x00);"><br/>03 Stop</div>
+  <div class="cam_button" id="button2" type="button" onClick="throttle(0x00,0x00);"><br/>00 Stop</div>
   <br/>
-
+  <div class="cam_button" id="button3" type="button" onClick="throttle(0x03,0x3F);"><br/>03 Half</div>
+  <div class="cam_button" id="button4" type="button" onClick="throttle(0x00,0x3F);"><br/>00 Half</div>
+  <br/>
+  <div class="cam_button" id="button5" type="button" onClick="throttle(0x03,0xFF);"><br/>03 Full</div>
+  <div class="cam_button" id="button6" type="button" onClick="throttle(0x00,0xFF);"><br/>00 Full</div>
+  <br/>
+   
 <div>
-		<span class="onoff_label"> Slider</span>
-		<label for="lights" class="switch">
-			<input id="slider" type="checkbox" onclick="handleSlider(this)">
-			<span class="slider round"></span>
+		
+		<label for="lights" class="switch">03 Lights
+			<input id="check1" type="checkbox" onclick="lights(this, 0x03)">
 		</label>
+		<label for="lights" class="switch">00 Lights
+			<input id="check1" type="checkbox" onclick="lights(this, 0x00)">
+		</label>
+
 	</div>
+
+	<div class="cam_button" id="button7" type="button" onClick="estop();"><br/>STOP</div>
+	<br/>
 </div>
 </body>
 </html>

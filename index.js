@@ -6,7 +6,7 @@ var port = process.env.PORT || 3000;
 const i2c = require('i2c-bus');
 
 const PIC_ADDR = 0x21;
-const DCC_REG = 0x03;
+const DCC_REG = 0x00;
 
 
 // configure additional node packages / components..
@@ -28,25 +28,42 @@ io.on('connection', function(socket){
 socket.on('button', function(toggle) {
 	if (toggle=="on") {
 		console.log("A button was pushed");	
-		buttonTouch("Turning Light Off");
-		// lights on
-        sendI2c([0x80]);
 	}else {
 		console.log("A button was released");	
-		buttonTouch("Turning Light On");
-		// lights on
-        sendI2c([0x9F]);
 	}
 }); 
 
-socket.on('slider', function(toggle) {
-	if (toggle=="on") {
-		console.log("A button was pushed");	
-		buttonTouch();
-	}else {
-		console.log("A button was released");	
-	}
-}); 
+socket.on('throttle',function(target,value) {
+	// target is the REG entry for the locomotive.
+	// value is a 7 bit value for speed. 1st bit is direction, remaning 7 are the 128 speed steps.
+	console.log(" Throttle request received with target:"+target.toString()+" and value:"+buffer.toString())
+	var buffer = Buffer.from([0x3F,value]);
+	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
+	sendI2c(target,buffer);
+});
+
+socket.on('eStop',function() {
+	var target = 0x00;
+	console.log(" Throttle request received with target:"+target.toString()+" and value:"+buffer.toString())
+	var buffer = Buffer.from([0x3F,0X01]);
+	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
+	sendI2c(target,buffer);
+});
+
+socket.on('lights',function(target,value) {
+	// target is the REG entry for the locomotive.
+	// value is true (lights on) or false (lights off)
+	console.log(" Light request received with target:"+target.toString()+" and value:"+buffer.toString())
+	if(value){
+		var buffer = Buffer.from([0x9F]);
+		console.log(" Lights on for target:"+target.toString())
+		sendI2c(target,buffer);
+	} else {
+		var buffer = Buffer.from([0x80]);
+		console.log(" Lights off for target:"+target.toString())
+		sendI2c(target,buffer);
+	} 
+});
 
   //Whenever someone disconnects this piece of code is executed
   socket.on('disconnect', function () {
@@ -66,10 +83,12 @@ function buttonTouch(msg){
 	
 }
 
-function sendI2c(message){
-	var buffer = Buffer.from(message);
+function sendI2c(target,message){
+// target is the dcc address to be set.)
+// message is a buffer object to send.	
+
 	const i2c1 = i2c.openSync(1);
-    i2c1.writeI2cBlockSync(PIC_ADDR, DCC_REG, buffer.length, buffer);
+    i2c1.writeI2cBlockSync(PIC_ADDR, target, message.length, message);
 	i2c1.closeSync();
 }
 
