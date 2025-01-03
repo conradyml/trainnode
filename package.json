@@ -23,6 +23,7 @@
   "homepage": "https://github.com/conradyml/trainnode#readme",
   "dependencies": {
     "express": "^4.21.2",
+    "i2c-bus": "^5.2.3",
     "socket.io": "^4.8.1"
   }
 }
