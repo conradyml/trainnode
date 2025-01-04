@@ -39,7 +39,7 @@ socket.on('throttle',function(target,value) {
 	console.log(" Throttle request received with target:"+target.toString()+" and value:"+value.toString())
 	var buffer = Buffer.from([0x3F,intToHex(value)]);
 	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
-	sendI2c(intToHex(target),buffer);
+	sendI2c(target,buffer);
 });
 
 socket.on('eStop',function() {
@@ -47,7 +47,7 @@ socket.on('eStop',function() {
 	console.log(" Throttle request received with target:"+target.toString()+" and value:"+buffer.toString())
 	var buffer = Buffer.from([0x3F,0X01]);
 	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
-	sendI2c(intToHex(target),buffer);
+	sendI2c(target,buffer);
 });
 
 socket.on('lights',function(target,value) {
@@ -82,12 +82,16 @@ function buttonTouch(msg){
 
 }
 
+function intToHex(num){
+	return num.toString(16).padStart(2,'0');
+}
+
 function sendI2c(target,message){
 // target is the dcc address to be set.)
 // message is a buffer object to send.	
 
 	const i2c1 = i2c.openSync(1);
-	reg = target.toString(16).padStart(2,'0');
+	reg = intToHex(target);
 	const buffer = Buffer.from(message);
     console.log('Sending i2C. Target: '+target+' Message: '+message+ ' Length: '+message.length);
     console.log('Sending i2c. Target: '+reg+' Message: '+buffer.toString()+' Length: '+buffer.length);
