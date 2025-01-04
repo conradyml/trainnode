@@ -44,9 +44,9 @@ socket.on('throttle',function(target,value) {
 
 socket.on('eStop',function() {
 	var target = 0x00;
-	console.log(" Throttle request received with target:"+target.toString()+" and value:"+buffer.toString())
+	console.log(" eStop Received")
 	var buffer = Buffer.from([0x3F,0X01]);
-	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
+	console.log(" eStop request submitted to target:"+target.toString()+" and message:"+buffer.toString())
 	sendI2c(target,buffer);
 });
 
