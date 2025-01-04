@@ -33,11 +33,20 @@ socket.on('button', function(toggle) {
 	}
 }); 
 
-socket.on('throttle',function(target,value) {
+socket.on('throttle128',function(target,value) {
 	// target is the REG entry for the locomotive.
 	// value is a 7 bit value for speed. 1st bit is direction, remaning 7 are the 128 speed steps.
 	console.log(" Throttle request received with target:"+target.toString()+" and value:"+value.toString())
 	var buffer = Buffer.from([0x3F,intToHex(value)]);
+	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
+	sendI2c(target,buffer);
+});
+
+socket.on('throttle',function(target,value) {
+	// target is the REG entry for the locomotive.
+	// value is a 7 bit value for speed. 1st bit is direction, remaning 7 are the 128 speed steps.
+	console.log(" Throttle request received with target:"+target.toString()+" and value:"+value.toString())
+	var buffer = Buffer.from([intToHex(value)]);
 	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
 	sendI2c(target,buffer);
 });
@@ -95,7 +104,7 @@ function sendI2c(target,message){
 	const buffer = Buffer.from(message);
     console.log('Sending i2C. Target: '+target+' Message: '+message+ ' Length: '+message.length);
     console.log('Sending i2c. Target: '+reg+' Message: '+buffer.toString()+' Length: '+buffer.length);
-    i2c1.writeI2cBlock(PIC_ADDR,reg, buffer.length, buffer, (err, bytesWritten, buffer) => {
+    i2c1.writeI2cBlock(PIC_ADDR, reg, buffer.length, buffer, (err, bytesWritten, buffer) => {
 		if (err) {
 		  console.log('[' + new Date().toLocaleString('en-us') + '] [ERROR] - '+err);
 		}
