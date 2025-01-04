@@ -104,7 +104,7 @@ function sendI2c(target,message){
 	const buffer = Buffer.from(message);
     console.log('Sending i2C. Target: '+target+' Message: '+message+ ' Length: '+message.length);
     console.log('Sending i2c. Target: '+reg+' Message: '+buffer.toString()+' Length: '+buffer.length);
-    i2c1.writeI2cBlock(PIC_ADDR, reg, buffer.length, buffer, (err, bytesWritten, buffer) => {
+    i2c1.writeI2cBlock(PIC_ADDR, 0x03, buffer.length, buffer, (err, bytesWritten, buffer) => {
 		if (err) {
 		  console.log('[' + new Date().toLocaleString('en-us') + '] [ERROR] - '+err);
 		}
