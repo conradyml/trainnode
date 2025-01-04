@@ -112,6 +112,10 @@ function throttle128(id,val){
 	socket.emit("throttle128",id,val);
 }
 
+function throttle(id,val){
+	socket.emit("throttle128",id,val);
+}
+
 function lights(cb,val){
 	socket.emit("lights",val,cb.checked);
 }
