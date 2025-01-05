@@ -113,7 +113,7 @@ function throttle128(id,val){
 }
 
 function throttle(id,val){
-	socket.emit("throttle128",id,val);
+	socket.emit("throttle",id,val);
 }
 
 function lights(cb,val){
@@ -144,14 +144,14 @@ Messages
   </div>
   
   <br/>
-  <div class="cam_button" id="button1" type="button" onClick="throttle128(0x03,0x00);"><br/>03 Stop</div>
-  <div class="cam_button" id="button2" type="button" onClick="throttle128(0x00,0x00);"><br/>00 Stop</div>
+  <div class="cam_button" id="button1" type="button" onClick="throttle128(0x03, 0x00);"><br/>03 Stop</div>
+  <div class="cam_button" id="button2" type="button" onClick="throttle128(0x00, 0x00);"><br/>00 Stop</div>
   <br/>
-  <div class="cam_button" id="button3" type="button" onClick="throttle128(0x03,0x3F);"><br/>03 Half</div>
-  <div class="cam_button" id="button4" type="button" onClick="throttle128(0x00,0x3F);"><br/>00 Half</div>
+  <div class="cam_button" id="button3" type="button" onClick="throttle128(0x03, 0x3F);"><br/>03 Half</div>
+  <div class="cam_button" id="button4" type="button" onClick="throttle128(0x00, 0x3F);"><br/>00 Half</div>
   <br/>
-  <div class="cam_button" id="button5" type="button" onClick="throttle128(0x03,0xFF);"><br/>03 Full</div>
-  <div class="cam_button" id="button6" type="button" onClick="throttle128(0x00,0xFF);"><br/>00 Full</div>
+  <div class="cam_button" id="button5" type="button" onClick="throttle128(0x03, 0xFF);"><br/>03 Full</div>
+  <div class="cam_button" id="button6" type="button" onClick="throttle128(0x00, 0xFF);"><br/>00 Full</div>
   <br/>
    
 <div>
@@ -169,14 +169,14 @@ Messages
 	<br/>
 
 	<br/>
-	<div class="cam_button" id="button1" type="button" onClick="throttle(0x03,0x40);"><br/>03 Stop (light off)</div>
-	<div class="cam_button" id="button2" type="button" onClick="throttle(0x00,0x50);"><br/>03 Stop (light on)</div>
+	<div class="cam_button" id="button1" type="button" onClick="throttle(0x00, 0x40);"><br/>03 Stop (light off)</div>
+	<div class="cam_button" id="button2" type="button" onClick="throttle(0x00, 0x50);"><br/>00 Stop (light on)</div>
 	<br/>
-	<div class="cam_button" id="button3" type="button" onClick="throttle(0x03,0x6F);"><br/>03 FWD (light off)</div>
-	<div class="cam_button" id="button4" type="button" onClick="throttle(0x00,0x7F);"><br/>00 FWD (light on)</div>
+	<div class="cam_button" id="button3" type="button" onClick="throttle(0x00, 0x6F);"><br/>03 FWD (light off)</div>
+	<div class="cam_button" id="button4" type="button" onClick="throttle(0x00, 0x7F);"><br/>00 FWD (light on)</div>
 	<br/>
-	<div class="cam_button" id="button5" type="button" onClick="throttle(0x03,0x4F);"><br/>03 REV (light off)</div>
-	<div class="cam_button" id="button6" type="button" onClick="throttle(0x00,0x5F);"><br/>00 REV (light on)</div>
+	<div class="cam_button" id="button5" type="button" onClick="throttle(0x00, 0x4F);"><br/>03 REV (light off)</div>
+	<div class="cam_button" id="button6" type="button" onClick="throttle(0x00, 0x5F);"><br/>00 REV (light on)</div>
 	<br/>
 </div>
 </body>
