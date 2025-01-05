@@ -106,9 +106,11 @@ function sendI2c(target,message){
     i2c1.writeI2cBlock(PIC_ADDR, reg, buffer.length, buffer, (err, bytesWritten, buffer) => {
 		if (err) {
 		  console.log('[' + new Date().toLocaleString('en-us') + '] [ERROR] - '+err);
-		}
+		  SendMessage(`[${new Date().toLocaleString('en-us')}] Command failed to send.`);
+		} else {
 		SendMessage(`[${new Date().toLocaleString('en-us')}] Command sent: ${bytesWritten} bytes written: ${buffer.toString()}`);
 		console.log(`[${new Date().toLocaleString('en-us')}] [sendI2c] - ${bytesWritten} bytes written`);
+		}
 	}
 	);
 	i2c1.closeSync();
