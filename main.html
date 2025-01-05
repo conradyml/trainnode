@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> 
+<meta name="mobile-web-app-capable" content="yes">
+<title>Train Control</title>
+<style type="text/css"> 
+
+	body {
+		background-color: #000000;
+		margin: 0px;
+	}
+
+    .flex-parent-element {
+      display: flex;
+      width:80%;
+    }
+
+    .flex-child-element {
+      flex: 2;
+      border: 2px solid blueviolet;
+      margin: 10px;
+    }
+
+    .flex-child-element:first-child {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+   #messages{
+     color:white;
+   }
+	.container {
+		width:auto;
+		text-align:center;
+		background-color:#ff0000;
+	}
+	
+	.cam_button {
+		display:inline-block;
+		height:80px;
+		width:80px;
+		background-color: transparent;
+		border-radius: 100%;
+		border: 7px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+		font-size: 16px;
+		cursor: pointer;
+	}
+	
+	.cam_button:active {
+		background-color: gray;
+	}
+  
+   
+	#sidenav {
+		color: #fff;
+		height: 100%;
+		min-width:150px;
+		background-color: #333;
+		padding-top: 20px;
+		padding-left: 5px;
+		padding-right: 5px;
+		font-family: 'Roboto', sans-serif;
+		text-align:center;
+        border:solid white;
+	}
+
+	#center {
+        color:#ffffff;
+        height:100%;
+        min-width:150px;
+        border: solid red;
+
+    }
+
+
+	.slidecontainer {
+	width: 100%; /* Width of the outside container */
+	}
+	
+	.onoff {
+	width: 90%; 
+	text-align: right;
+	padding-top: 5px;
+	margin-bottom:20px;
+	margin-top:20px;
+	}
+	.onoff_label {
+	vertical-align: middle;
+	padding-right:20px;
+	}
+
+
+
+</style>
+<style>
+    /* this style section allows checkboxes that look like sliders. */
+    /* from https://www.w3schools.com/howto/howto_css_switch.asp */
+    /* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.switchslider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.switchslider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .switchslider {
+  background-color: #2196F3;
+}
+
+input:focus + .switchslider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .switchslider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.switchslider.round {
+  border-radius: 34px;
+}
+
+.switchslider.round:before {
+  border-radius: 50%;
+}
+</style>
+<style>
+    /* this style section used for range slider controls. */
+    /* from https://www.w3schools.com/howto/howto_js_rangeslider.asp  */
+    .slidecontainer {
+  width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #04AA6D; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #04AA6D; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+</style>
+
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io(); // comment this out for better debugging
+var sendFlag = false;
+
+function init(){
+	
+	
+	socket.on('message', function(msg){
+		console.log("message returned from server:"+msg)
+		const list = document.getElementById('messages');
+		const newItem = document.createElement('li');
+		newItem.textContent = msg;
+		list.appendChild(newItem);
+
+	});
+	
+}
+	
+function fireOnReady() { 
+	// execute after DOM is loaded
+
+	init();
+}
+
+if (document.readyState === 'complete') {
+    fireOnReady();
+} else {
+    document.addEventListener("DOMContentLoaded", fireOnReady);
+}
+
+function throttle128(id,val){
+	socket.emit("throttle128",id,val);
+}
+
+function throttle(id,val){
+	socket.emit("throttle",id,val);
+}
+
+function lights(cb,val){
+	socket.emit("lights",val,cb.checked);
+}
+function estop(){
+	socket.emit("eStop");
+	console.log("estop clicked");
+}
+function handleButton(button,action) {
+   socket.emit(utton.id, action);
+}
+function handleSlider(cb) {
+   socket.emit(cb.id, cb.checked);
+}
+</script>
+<script>
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+        output.innerHTML = slider.value; // Display the default slider value
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
+</script>
+<body scroll="no" class="flex-parent-element">
+<div id="sidenav" class="flex-child-element">
+
+        <div class="cam_button" id="button7" type="button" onClick="estop();"><br/>STOP</div>
+        <br/>
+        <div id="Throttle0" class="ThrottleControl">
+            <label class="switch">
+                <input type="checkbox">
+                <span class="switchslider round"></span>
+              </label>
+              <span id="demo">000</span>
+            <div class="slidecontainer">
+               <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+            </div>
+        </div>
+</div>
+<div id = "center" class="flex-child-element">
+Messages
+<ul id="messages"></ul>
+<p id="stream">Some web stream here!</p>
+</div>
+
+
+</body>
+</html>
