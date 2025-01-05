@@ -100,10 +100,9 @@ function sendI2c(target,message){
 // message is a buffer object to send.	
 
 	const i2c1 = i2c.openSync(1);
-	//need to convert the target received (which is a string representation of hex value) into a byte.
-	//const regByteArray = new Uint8Array(parseInt(target, 16));
-	//reg = regByteArray[0];
+	//convert the target received from a  string representation of hex value into a byte.
 	reg = parseInt(target, 16);
+	//convert the message received from byte array to buffer
 	const buffer = Buffer.from(message);
     console.log('Sending i2C. Target: '+target+' Message: '+message+ ' Length: '+message.length);
     console.log('Sending i2c. Target: '+reg+' Message: '+buffer.toString()+' Length: '+buffer.length);
