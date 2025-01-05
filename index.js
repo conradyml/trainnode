@@ -37,19 +37,13 @@ socket.on('throttle128',function(target,value) {
 	// target is the REG entry for the locomotive.
 	// value is a 7 bit value for speed. 1st bit is direction, remaning 7 are the 128 speed steps.
 	console.log(" Throttle request received with target:"+target.toString()+" and value:"+value.toString())
-	var buffer = Buffer.from([0x3F,intToHex(value)]);
-	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
-	sendI2c(target,buffer);
+	var message = [0x3F,parseInt(value)];
+	sendI2c(target,message);
 });
 
 socket.on('throttle',function(target,value) {
 	// target is the REG entry for the locomotive.
-	// value is a 7 bit value for speed. 1st bit is direction, remaning 7 are the 128 speed steps.
 	console.log(" Throttle request received with target:"+target.toString()+" and value:"+value.toString())
-	//var buffer = Buffer.from([intToHex(value)]);
-	//console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
-	//sendI2c(target,buffer);
-
 	var message = [parseInt(value)];
 //	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+message.toString());
 	sendI2c(target,message);
@@ -58,9 +52,8 @@ socket.on('throttle',function(target,value) {
 socket.on('eStop',function() {
 	var target = 0x00;
 	console.log(" eStop Received")
-	var buffer = Buffer.from([0x3F,0x01]);
-	console.log(" eStop request submitted to target:"+target.toString()+" and message:"+buffer.toString())
-	sendI2c(target,buffer);
+	var message =[0x3F,0x01];
+	sendI2c(target,message);
 });
 
 socket.on('lights',function(target,value) {
@@ -89,7 +82,7 @@ socket.on('lights',function(target,value) {
 // *******************************************
 // *  Utility Functions
 
-function buttonTouch(msg){
+function SendMessage(msg){
 	io.emit('message',msg);
 	console.log('[' + new Date().toLocaleString('en-us') + '] [on buttonTouch] - '+'sending button push message.');
 
@@ -114,6 +107,7 @@ function sendI2c(target,message){
 		if (err) {
 		  console.log('[' + new Date().toLocaleString('en-us') + '] [ERROR] - '+err);
 		}
+		SendMessage(`[${new Date().toLocaleString('en-us')}] Command sent: ${bytesWritten} bytes written: ${buffer.toString()}`);
 		console.log(`[${new Date().toLocaleString('en-us')}] [sendI2c] - ${bytesWritten} bytes written`);
 	}
 	);
