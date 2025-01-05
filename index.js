@@ -46,15 +46,19 @@ socket.on('throttle',function(target,value) {
 	// target is the REG entry for the locomotive.
 	// value is a 7 bit value for speed. 1st bit is direction, remaning 7 are the 128 speed steps.
 	console.log(" Throttle request received with target:"+target.toString()+" and value:"+value.toString())
-	var buffer = Buffer.from([intToHex(value)]);
-	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
-	sendI2c(target,buffer);
+	//var buffer = Buffer.from([intToHex(value)]);
+	//console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
+	//sendI2c(target,buffer);
+
+	var message = parseInt(value);
+	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+message.toString());
+	sendI2c(target,message);
 });
 
 socket.on('eStop',function() {
 	var target = 0x00;
 	console.log(" eStop Received")
-	var buffer = Buffer.from([0x3F,0X01]);
+	var buffer = Buffer.from([0x3F,0x01]);
 	console.log(" eStop request submitted to target:"+target.toString()+" and message:"+buffer.toString())
 	sendI2c(target,buffer);
 });
