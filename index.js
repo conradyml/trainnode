@@ -50,8 +50,8 @@ socket.on('throttle',function(target,value) {
 	//console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+buffer.toString())
 	//sendI2c(target,buffer);
 
-	var message = parseInt(value);
-	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+message.toString());
+	var message = [parseInt(value)];
+//	console.log(" Throttle request submitted to target:"+target.toString()+" and message:"+message.toString());
 	sendI2c(target,message);
 });
 
