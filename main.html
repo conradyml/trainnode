@@ -224,6 +224,13 @@ input:checked + .switchslider:before {
 var socket = io(); // comment this out for better debugging
 var sendFlag = false;
 
+use128BitSpeed = false;
+
+let ThrottleDictionary = new Object();
+  ThrottleDictionary["Throttle0"]=0x00;
+  ThrottleDictionary["Throttle3"]=0x03;
+  ThrottleDictionary["Throttle5"]=0x05;
+
 function init(){
 	
 	
@@ -235,39 +242,32 @@ function init(){
 		list.appendChild(newItem);
 
 	});
-	
-  use128BitSpeed = false;
+ 
+  var throttles = document.getElementsByClassName("slider");
+  for (let i = 0; i<throttles.length; i++){
+    setThrottleListener(throttles[i]);
+  }
 
-let ThrottleDictionary = new Object();
-  ThrottleDictionary["Throttle0"]=0x00;
-  ThrottleDictionary["Throttle3"]=0x03;
-  ThrottleDictionary["Throttle5"]=0x05;
+  function setThrottleListener(throttle){
+    throttle.addEventListener("input",function(event){
+      output = event.target.id+"_val"
+      document.getElementById(output).innerHTML = event.target.value;
+    });
+    throttle.addEventListener("change",function(event){
+      ThrottleChange(event.target)
+    });
+  }
 
-var throttles = document.getElementsByClassName("slider");
-for (let i = 0; i<throttles.length; i++){
-setThrottleListener(throttles[i]);
-}
+  var lights = document.getElementsByClassName("lights");
+  for (let i = 0; i<lights.length; i++){
+    setLightListenter(lights[i]);
+  }
 
-function setThrottleListener(throttle){
-  throttle.addEventListener("input",function(event){
-    output = event.target.id+"_val"
-    document.getElementById(output).innerHTML = event.target.value;
-  });
-  throttle.addEventListener("change",function(event){
-    ThrottleChange(event.target)
-  });
-}
-
-var lights = document.getElementsByClassName("lights");
-for (let i = 0; i<lights.length; i++){
-  setLightListenter(lights[i]);
-}
-
-function setLightListenter(light){
- light.addEventListener("change",function(event){
-    LightChange(event.target)
-  });
-}
+  function setLightListenter(light){
+   light.addEventListener("change",function(event){
+     LightChange(event.target)
+    });
+  }
 }
 	
 function fireOnReady() { 
