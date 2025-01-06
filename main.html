@@ -242,6 +242,46 @@ function fireOnReady() {
 	// execute after DOM is loaded
 
 	init();
+  use128BitSpeed = false;
+
+  let ThrottleDictionary = new Object();
+    ThrottleDictionary["Throttle0"]=0x00;
+    ThrottleDictionary["Throttle3"]=0x03;
+    ThrottleDictionary["Throttle5"]=0x05;
+
+
+
+  function LightChange(light){
+    console.log("Light: "+light.id+" change to value:"+light.value);
+  }
+
+  var throttles = document.getElementsByClassName("slider");
+  for (let i = 0; i<throttles.length; i++){
+  setThrottleListener(throttles[i]);
+  }
+
+  function setThrottleListener(throttle){
+    throttle.addEventListener("input",function(event){
+      output = event.target.id+"_val"
+      document.getElementById(output).innerHTML = event.target.value;
+    });
+    throttle.addEventListener("change",function(event){
+      ThrottleChange(event.target)
+    });
+  }
+
+  var lights = document.getElementsByClassName("lights");
+  for (let i = 0; i<lights.length; i++){
+    setLightListenter(lights[i]);
+  }
+
+  function setLightListenter(light){
+   light.addEventListener("change",function(event){
+      LightChange(event.target)
+    });
+  }
+
+
 }
 
 if (document.readyState === 'complete') {
@@ -273,6 +313,35 @@ function handleButton(button,action) {
 function handleSlider(cb) {
    socket.emit(cb.id, cb.checked);
 }
+
+function ThrottleChange(throttle){
+    console.log("Throttle: "+throttle.id+" change to value:"+throttle.value);
+    var hexid = ThrottleDictionary[throttle.id];
+    var speed = throttle.value;
+    if (use128BitSpeed==true){
+      if (speed < 0) {
+        //reverse
+        speed = Math.round(Math.abs(speed*126/100));
+      } else {
+        speed = Math.round(Math.abs(speed*126/100));
+        speed = (0x80^speed); //add 8th bit based on 
+      }
+      throttle128(hexid,speed);
+    } else {
+    
+      if (speed < 0) {
+        speed = Math.round(Math.abs(speed*16/100));
+        speed = (0x40^speed); // 16 bit reverse speed starts with 0x40
+      } else {
+        speed = Math.round(Math.abs(speed*16/100));
+        speed = (0x60^speed); //
+      }
+      throttle(hexid,speed);
+    }
+
+  }
+
+
 </script>
 
 <body scroll="no" class="flex-parent-element">
@@ -323,75 +392,6 @@ function handleSlider(cb) {
 
 </div>
 
-<script>
-
-use128BitSpeed = false;
-
-let ThrottleDictionary = new Object();
-  ThrottleDictionary["Throttle0"]=0x00;
-  ThrottleDictionary["Throttle3"]=0x03;
-  ThrottleDictionary["Throttle5"]=0x05;
-
-function ThrottleChange(throttle){
-  console.log("Throttle: "+throttle.id+" change to value:"+throttle.value);
-  var hexid = ThrottleDictionary[throttle.id];
-  var speed = throttle.value;
-  if (use128BitSpeed==true){
-    if (speed < 0) {
-      //reverse
-      speed = Math.round(Math.abs(speed*126/100));
-    } else {
-      speed = Math.round(Math.abs(speed*126/100));
-      speed = (0x80^speed); //add 8th bit based on 
-    }
-   throttle128(hexid,speed);
-  } else {
-    
-    if (speed < 0) {
-      speed = Math.round(Math.abs(speed*16/100));
-      speed = (0x40^speed); // 16 bit reverse speed starts with 0x40
-    } else {
-      speed = Math.round(Math.abs(speed*16/100));
-      speed = (0x60^speed); //
-    }
-    throttle(hexid,speed);
-  }
-
-}
-function LightChange(light){
-
-console.log("Light: "+light.id+" change to value:"+light.value);
-}
-
-var throttles = document.getElementsByClassName("slider");
-for (let i = 0; i<throttles.length; i++){
-  setThrottleListener(throttles[i]);
-}
-
-function setThrottleListener(throttle){
-  throttle.addEventListener("input",function(event){
-    output = event.target.id+"_val"
-    document.getElementById(output).innerHTML = event.target.value;
-  });
-  throttle.addEventListener("change",function(event){
-    ThrottleChange(event.target)
-  });
-}
-
-var lights = document.getElementsByClassName("lights");
-for (let i = 0; i<lights.length; i++){
-  setLightListenter(lights[i]);
-}
-
-function setLightListenter(light){
- light.addEventListener("change",function(event){
-    LightChange(event.target)
-  });
-}
-
-
-
-</script>
 <datalist id="my-detents" style="display:none">
   <option value="50">
     <option value="0">

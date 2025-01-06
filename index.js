@@ -15,7 +15,7 @@ const DCC_REG = 0x00;
 // ************************************
 // *   set up the app
 app.get('/', function(req, res){
-  res.sendFile('test.html', { root: __dirname });
+  res.sendFile('main.html', { root: __dirname });
 //  console.log('[' + new Date().toLocaleString('en-us') + '] [app get] - '+'HTML sent to client');
 });
 
