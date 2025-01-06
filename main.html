@@ -325,7 +325,7 @@ function ThrottleChange(throttle){
         speed = Math.round(Math.abs(speed*16/100));
         speed = (0x40^speed); // 16 bit reverse speed starts with 0x40
       } else {
-        speed = Math.round(Math.abs(speed*16/100));
+        speed = Math.round(Math.abs(speed*15/100));
         speed = (0x60^speed); //
       }
       throttle16(hexid,speed);
