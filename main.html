@@ -334,7 +334,7 @@ function ThrottleChange(throttle){
 
 function LightChange(light){
   console.log("Light: "+light.id+" change to value:"+light.value);
-  var hexid = THrottleDictionary[light.id.substring(0,9)];
+  var hexid = ThrottleDictionary[light.id.substring(0,9)];
   lights(light,hexid);
   
 
