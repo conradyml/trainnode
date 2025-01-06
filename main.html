@@ -6,7 +6,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Train Control</title>
 <style type="text/css"> 
-
+  :root{
+    --slider_background:blue;
+  }
 	body {
 		background-color: #000000;
 		margin: 0px;
@@ -30,7 +32,7 @@
 
    #messages{
      color:white;
-   }
+     }
 	.container {
 		width:auto;
 		text-align:center;
@@ -64,6 +66,7 @@
 		padding-top: 20px;
 		padding-left: 5px;
 		padding-right: 5px;
+    padding-bottom: 5px;
 		font-family: 'Roboto', sans-serif;
 		text-align:center;
         border:solid white;
@@ -76,24 +79,23 @@
         border: solid red;
 
     }
+    #Throttle0_container{
+    --slider_background:#d3ff12;
+  }
+  #Throttle3_container{
+    --slider_background:#2e944d;
+  }
+  #Throttle5_container{
+    --slider_background:#3d93e4;
+  }
 
-
-	.slidecontainer {
-	width: 100%; /* Width of the outside container */
-	}
-	
-	.onoff {
-	width: 90%; 
-	text-align: right;
-	padding-top: 5px;
-	margin-bottom:20px;
-	margin-top:20px;
-	}
-	.onoff_label {
-	vertical-align: middle;
-	padding-right:20px;
-	}
-
+  .ThrottleControl{
+    display: inline-block;
+    width: 75px;
+    border:1px solid var(--slider_background);
+    padding:2px;
+    
+  }
 
 
 </style>
@@ -104,8 +106,9 @@
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 50px;
+  height: 24px;
+  margin-bottom:5px;
 }
 
 /* Hide default HTML checkbox */
@@ -123,29 +126,33 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: #d3d3d3;
+  opacity: 0.7;
   -webkit-transition: .4s;
   transition: .4s;
 }
-
+.switchslider:hover{
+  opacity: 1;
+}
 .switchslider:before {
   position: absolute;
   content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
   background-color: white;
+  border:1px solid darkslategray;
   -webkit-transition: .4s;
   transition: .4s;
 }
 
 input:checked + .switchslider {
-  background-color: #2196F3;
+  background-color: var(--slider_background);
 }
 
 input:focus + .switchslider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px var(--slider_background);
 }
 
 input:checked + .switchslider:before {
@@ -156,7 +163,7 @@ input:checked + .switchslider:before {
 
 /* Rounded sliders */
 .switchslider.round {
-  border-radius: 34px;
+  border-radius: 26px;
 }
 
 .switchslider.round:before {
@@ -167,15 +174,17 @@ input:checked + .switchslider:before {
     /* this style section used for range slider controls. */
     /* from https://www.w3schools.com/howto/howto_js_rangeslider.asp  */
     .slidecontainer {
-  width: 100%; /* Width of the outside container */
+      margin-top:5px;
 }
 
 /* The slider itself */
 .slider {
-  -webkit-appearance: none;  /* Override default CSS styles */
+  writing-mode: vertical-lr; 
+  direction: rtl;
+ -webkit-appearance: none;
   appearance: none;
-  width: 100%; /* Full-width */
-  height: 25px; /* Specified height */
+  width: 10px; /* Full-width */
+  height: 150px; /* Specified height */
   background: #d3d3d3; /* Grey background */
   outline: none; /* Remove outline */
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
@@ -190,18 +199,21 @@ input:checked + .switchslider:before {
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .slider::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
+  -webkit-appearance: none; /* Override default look */ 
   appearance: none;
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #04AA6D; /* Green background */
+  transform: translateX(-6px); 
+  border-radius:50%;
+  background: var(--slider_background); /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 .slider::-moz-range-thumb {
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #04AA6D; /* Green background */
+  border-radius:50%;
+  background: var(--slider_background); /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 </style>
@@ -240,10 +252,12 @@ if (document.readyState === 'complete') {
 
 function throttle128(id,val){
 	socket.emit("throttle128",id,val);
+  console.log("Sending 128 bit speed control with id: "+id+" and value: "+val);
 }
 
 function throttle(id,val){
 	socket.emit("throttle",id,val);
+  console.log("Sending 16 bit speed control with id: "+id+" and value: "+val);
 }
 
 function lights(cb,val){
@@ -260,38 +274,128 @@ function handleSlider(cb) {
    socket.emit(cb.id, cb.checked);
 }
 </script>
-<script>
-    var slider = document.getElementById("myRange");
-    var output = document.getElementById("demo");
-        output.innerHTML = slider.value; // Display the default slider value
 
-// Update the current slider value (each time you drag the slider handle)
-slider.oninput = function() {
-  output.innerHTML = this.value;
-}
-</script>
 <body scroll="no" class="flex-parent-element">
 <div id="sidenav" class="flex-child-element">
 
-        <div class="cam_button" id="button7" type="button" onClick="estop();"><br/>STOP</div>
+        <div class="cam_button" id="button7" type="button" onClick="estop();"><br/>ESTOP</div>
         <br/>
-        <div id="Throttle0" class="ThrottleControl">
-            <label class="switch">
-                <input type="checkbox">
-                <span class="switchslider round"></span>
-              </label>
-              <span id="demo">000</span>
+        <hr style="width:75%"/>
+
+        <div id="Throttle0_container" class="ThrottleControl">
+          <span class="throttleLabel">Master</span>
+          <label class="switch">
+            <input type="checkbox" id="Throttle0_lights" class="lights">
+            <span class="switchslider round"></span>
+          </label>
+          <div class=ThrottleValue id="Throttle0_val">000</div>
             <div class="slidecontainer">
-               <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+               <input type="range" min="-100" max="100" value="0" step="1" list="my-detents" class="slider" id="Throttle0">
             </div>
         </div>
+        <div id="Throttle3_container" class="ThrottleControl">
+          <span class="throttleLabel">Engine 03</span>
+          <label class="switch">
+            <input type="checkbox" id="Throttle3_lights" class="lights">
+            <span class="switchslider round"></span>
+          </label>
+          <div class=ThrottleValue id="Throttle3_val">000</div>
+            <div class="slidecontainer">
+               <input type="range" min="-100" max="100" value="0" step="1" list="my-detents" class="slider" id="Throttle3">
+            </div>
+        </div>
+        <div id="Throttle5_container" class="ThrottleControl">
+          <span class="throttleLabel">Engine 05</span>
+          <label class="switch">
+            <input type="checkbox" id="Throttle5_lights" class="lights">
+            <span class="switchslider round"></span>
+          </label>
+          <div class=ThrottleValue id="Throttle5_val">000</div>
+            <div class="slidecontainer">
+               <input type="range" min="-100" max="100" value="0" step="1" list="my-detents" class="slider" id="Throttle5" >
+            </div>
+        </div>
+
 </div>
 <div id = "center" class="flex-child-element">
-Messages
+<span class="title">Messages</span>
 <ul id="messages"></ul>
-<p id="stream">Some web stream here!</p>
+
 </div>
 
+<script>
 
+use128BitSpeed = false;
+
+let ThrottleDictionary = new Object();
+  ThrottleDictionary["Throttle0"]=0x00;
+  ThrottleDictionary["Throttle3"]=0x03;
+  ThrottleDictionary["Throttle5"]=0x05;
+
+function ThrottleChange(throttle){
+  console.log("Throttle: "+throttle.id+" change to value:"+throttle.value);
+  var hexid = ThrottleDictionary[throttle.id];
+  var speed = throttle.value;
+  if (use128BitSpeed==true){
+    if (speed < 0) {
+      //reverse
+      speed = Math.round(Math.abs(speed*126/100));
+    } else {
+      speed = Math.round(Math.abs(speed*126/100));
+      speed = (0x80^speed); //add 8th bit based on 
+    }
+   throttle128(hexid,speed);
+  } else {
+    
+    if (speed < 0) {
+      speed = Math.round(Math.abs(speed*16/100));
+      speed = (0x40^speed); // 16 bit reverse speed starts with 0x40
+    } else {
+      speed = Math.round(Math.abs(speed*16/100));
+      speed = (0x60^speed); //
+    }
+    throttle(hexid,speed);
+  }
+
+}
+function LightChange(light){
+
+console.log("Light: "+light.id+" change to value:"+light.value);
+}
+
+var throttles = document.getElementsByClassName("slider");
+for (let i = 0; i<throttles.length; i++){
+  setThrottleListener(throttles[i]);
+}
+
+function setThrottleListener(throttle){
+  throttle.addEventListener("input",function(event){
+    output = event.target.id+"_val"
+    document.getElementById(output).innerHTML = event.target.value;
+  });
+  throttle.addEventListener("change",function(event){
+    ThrottleChange(event.target)
+  });
+}
+
+var lights = document.getElementsByClassName("lights");
+for (let i = 0; i<lights.length; i++){
+  setLightListenter(lights[i]);
+}
+
+function setLightListenter(light){
+ light.addEventListener("change",function(event){
+    LightChange(event.target)
+  });
+}
+
+
+
+</script>
+<datalist id="my-detents" style="display:none">
+  <option value="50">
+    <option value="0">
+  <option value="-50">
+</datalist>
 </body>
 </html>
