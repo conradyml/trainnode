@@ -287,7 +287,7 @@ function throttle128(id,val){
   console.log("Sending 128 bit speed control with id: "+id+" and value: "+val);
 }
 
-function throttle(id,val){
+function throttle16(id,val){
 	socket.emit("throttle",id,val);
   console.log("Sending 16 bit speed control with id: "+id+" and value: "+val);
 }
@@ -328,7 +328,7 @@ function ThrottleChange(throttle){
         speed = Math.round(Math.abs(speed*16/100));
         speed = (0x60^speed); //
       }
-      throttle(hexid,speed);
+      throttle16(hexid,speed);
     }
 }
 
