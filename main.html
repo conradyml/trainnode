@@ -236,52 +236,44 @@ function init(){
 
 	});
 	
+  use128BitSpeed = false;
+
+let ThrottleDictionary = new Object();
+  ThrottleDictionary["Throttle0"]=0x00;
+  ThrottleDictionary["Throttle3"]=0x03;
+  ThrottleDictionary["Throttle5"]=0x05;
+
+var throttles = document.getElementsByClassName("slider");
+for (let i = 0; i<throttles.length; i++){
+setThrottleListener(throttles[i]);
+}
+
+function setThrottleListener(throttle){
+  throttle.addEventListener("input",function(event){
+    output = event.target.id+"_val"
+    document.getElementById(output).innerHTML = event.target.value;
+  });
+  throttle.addEventListener("change",function(event){
+    ThrottleChange(event.target)
+  });
+}
+
+var lights = document.getElementsByClassName("lights");
+for (let i = 0; i<lights.length; i++){
+  setLightListenter(lights[i]);
+}
+
+function setLightListenter(light){
+ light.addEventListener("change",function(event){
+    LightChange(event.target)
+  });
+}
 }
 	
 function fireOnReady() { 
 	// execute after DOM is loaded
 
 	init();
-  use128BitSpeed = false;
-
-  let ThrottleDictionary = new Object();
-    ThrottleDictionary["Throttle0"]=0x00;
-    ThrottleDictionary["Throttle3"]=0x03;
-    ThrottleDictionary["Throttle5"]=0x05;
-
-
-
-  function LightChange(light){
-    console.log("Light: "+light.id+" change to value:"+light.value);
-  }
-
-  var throttles = document.getElementsByClassName("slider");
-  for (let i = 0; i<throttles.length; i++){
-  setThrottleListener(throttles[i]);
-  }
-
-  function setThrottleListener(throttle){
-    throttle.addEventListener("input",function(event){
-      output = event.target.id+"_val"
-      document.getElementById(output).innerHTML = event.target.value;
-    });
-    throttle.addEventListener("change",function(event){
-      ThrottleChange(event.target)
-    });
-  }
-
-  var lights = document.getElementsByClassName("lights");
-  for (let i = 0; i<lights.length; i++){
-    setLightListenter(lights[i]);
-  }
-
-  function setLightListenter(light){
-   light.addEventListener("change",function(event){
-      LightChange(event.target)
-    });
-  }
-
-
 }
 
 if (document.readyState === 'complete') {
@@ -338,9 +330,15 @@ function ThrottleChange(throttle){
       }
       throttle(hexid,speed);
     }
+}
 
-  }
+function LightChange(light){
+  console.log("Light: "+light.id+" change to value:"+light.value);
+  var hexid = THrottleDictionary[light.id.substring(0,9)];
+  lights(light,hexid);
+  
 
+}
 
 </script>
 
