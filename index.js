@@ -69,6 +69,14 @@ socket.on('lights',function(target,value) {
 	}
 	sendI2c(target,msg);
 });
+socket.on('command',function(target,value) {
+	// target is the REG entry for the locomotive.
+	// value is true (lights on) or false (lights off)
+	console.log(" Command request received with target:"+target.toString()+" and value:"+value.toString())
+
+	sendI2c(target,value);
+});
+
 
   //Whenever someone disconnects this piece of code is executed
   socket.on('disconnect', function () {

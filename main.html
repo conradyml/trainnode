@@ -97,6 +97,30 @@
     
   }
 
+  #messageContainer{
+    height:300px;
+    width:100%;
+    padding:5px;
+  }
+  #contentContainer{
+      height: 400px;
+      width:100%;
+  }
+  #freeform_area{
+    padding-left:20px;
+    text-align:left;
+  }
+  #freeform_area > form > label{
+    padding-right: 10px;
+  }
+  #freeform_area > form{
+    display:inline-block;
+  }
+  #freeform_button{display: inline-block;
+    border: 2px solid orange;
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;}
 
 </style>
 <style>
@@ -236,11 +260,7 @@ function init(){
 	
 	socket.on('message', function(msg){
 		console.log("message returned from server:"+msg)
-		const list = document.getElementById('messages');
-		const newItem = document.createElement('li');
-		newItem.textContent = msg;
-		list.appendChild(newItem);
-
+		LogMessage(msg);
 	});
  
   var throttles = document.getElementsByClassName("slider");
@@ -268,8 +288,34 @@ function init(){
      LightChange(event.target)
     });
   }
+
+
+var button = document.getElementById("freeform_button");
+  button.addEventListener("click", function(){
+    var Addr = document.getElementById("ffAddress").value;
+    var B1 = document.getElementById("ffByte1").value;
+    var B2 = document.getElementById("ffByte2").value;
+    if ((Addr.trim()!== "") && (B1.trim()!== "")){
+      if (B2.trim()!== ""){
+        Addr = parseInt(Addr,2);
+        B1 = parseInt(B1,2);
+        B2 = parseInt(B2,2);
+        LogMessage(" Writing 3 word message: "+parseInt(Addr, 16)+" "+B1+" "+B2+".")
+        sendCommand(Addr,[B1,B2]);
+      } else {
+        Addr = parseInt(Addr,2);
+        B1 = parseInt(B1,2);
+        LogMessage(" Writing 2 word message: "+Addr+" "+B1)
+        sendCommand(Addr,[B1]);
+       }
+    } else {
+      LogMessage(" Need at least an address and 1st byte.")
+
+    }
+  });
+
 }
-	
+
 function fireOnReady() { 
 	// execute after DOM is loaded
   //
@@ -281,6 +327,8 @@ if (document.readyState === 'complete') {
 } else {
     document.addEventListener("DOMContentLoaded", fireOnReady);
 }
+
+// communication functions
 
 function throttle128(id,val){
 	socket.emit("throttle128",id,val);
@@ -305,6 +353,19 @@ function handleButton(button,action) {
 function handleSlider(cb) {
    socket.emit(cb.id, cb.checked);
 }
+function sendCommand(addr,command){
+  //command is a byte array.
+   socket.emit("command",addr,command);
+}
+
+
+// Utility Functions
+function LogMessage(msg){
+  const list = document.getElementById('messages');
+		const newItem = document.createElement('li');
+		newItem.textContent = msg;
+		list.appendChild(newItem);
+  }	
 
 function ThrottleChange(throttle){
     console.log("Throttle: "+throttle.id+" change to value:"+throttle.value);
@@ -322,7 +383,7 @@ function ThrottleChange(throttle){
     } else {
     
       if (speed < 0) {
-        speed = Math.round(Math.abs(speed*16/100));
+        speed = Math.round(Math.abs(speed*15/100));
         speed = (0x40^speed); // 16 bit reverse speed starts with 0x40
       } else {
         speed = Math.round(Math.abs(speed*15/100));
@@ -382,12 +443,25 @@ function LightChange(light){
                <input type="range" min="-100" max="100" value="0" step="1" list="my-detents" class="slider" id="Throttle5" >
             </div>
         </div>
+        <hr style="width:75%"/>
+        <div id ="freeform_area">
+          <div id ="freeform_button" class="button"></div>
+          <form>
+            <label for="Address">Address:</label><input type="text" id="ffAddress" name="Address" size="6"><br/>
+            <label for="Byte1:">Byte1</label> <input type="text" id="ffByte1" name="Byte1" size = 8> <br/>
+            <label for="Byte2:">Byte2</label> <input type="text" id="ffByte2" name="Byte2" size = 8>
+          </form>
+        </div>
 
 </div>
 <div id = "center" class="flex-child-element">
-<span class="title">Messages</span>
-<ul id="messages"></ul>
-
+   <div id ="contentContainer">
+      Something Goes Here.
+  </div>
+  <div id = "messageContainer">
+    <span class="title">Messages</span>
+    <ul id="messages"></ul>
+  </div>  
 </div>
 
 <datalist id="my-detents" style="display:none">
