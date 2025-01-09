@@ -77,6 +77,32 @@ socket.on('command',function(target,value) {
 	sendI2c(target,value);
 });
 
+socket.on('SetCV',function(target, addr, value) {
+	// target is the REG entry for the locomotive.
+	// addr is 2 byte array, indicating the 10 bit address of the CV to be set.
+	// form should be 000000AA AAAAAAAA.
+	// value is the byte value to set in that variable.
+	console.log(" SETCV request received with target:"+target.toString()+"address: "+addr.toString()+" and value:"+value.toString())
+	var cmd = 0x7C  // command starts with bits 0111 11AA for CV Direct write.  AA are the 2 most significant address bits.
+	addr[0] = (addr[0]&0x03);  // mask first 6 bits just in case. (expected to be 0's.)
+	cmd = (cmd^addr[0]);	// combine with cmd to complete cmd.
+	msg = [cmd,addr[1],parseInt(value),parseInt(value)]
+	sendServiceModeCommand(target,msg);
+});
+
+socket.on('VerifyCV',function(target, addr, value) {
+	// target is the REG entry for the locomotive.
+	// addr is 2 byte array, indicating the 10 bit address of the CV to be set.
+	// form should be 000000AA AAAAAAAA.
+	// value is the byte value to verfified in that variable.
+	console.log(" SETCV request received with target:"+target.toString()+"address: "+addr.toString()+" and value:"+value.toString())
+	var cmd = 0x74  // command starts with bits 0111 01AA for CV Direct verify.  AA are the 2 most significant address bits.
+	addr[0] = (addr[0]&0x03);  // mask first 6 bits just in case. (expected to be 0's.)
+	cmd = (cmd^addr[0]);	// combine with cmd to complete cmd.
+	msg = [cmd,addr[1],parseInt(value),parseInt(value)]
+	sendServiceModeCommand(target,msg);
+});
+
 
   //Whenever someone disconnects this piece of code is executed
   socket.on('disconnect', function () {
@@ -107,9 +133,9 @@ function sendI2c(target,message){
 	const i2c1 = i2c.openSync(1);
 	//convert the target received from a  string representation of hex value into a byte.
 	reg = parseInt(target, 16);
+	var retval = false;
 	//convert the message received from byte array to buffer
 	const buffer = Buffer.from(message);
-    console.log('Sending i2C. Target: '+target+' Message: '+message+ ' Length: '+message.length);
     console.log('Sending i2c. Target: '+reg+' Message: '+buffer.toString()+' Length: '+buffer.length);
     i2c1.writeI2cBlock(PIC_ADDR, reg, buffer.length, buffer, (err, bytesWritten, buffer) => {
 		if (err) {
@@ -118,11 +144,35 @@ function sendI2c(target,message){
 		} else {
 		SendMessage(`[${new Date().toLocaleString('en-us')}] Command sent: ${bytesWritten} bytes written: ${buffer.toString()}`);
 		console.log(`[${new Date().toLocaleString('en-us')}] [sendI2c] - ${bytesWritten} bytes written`);
+		retval=true
 		}
 	}
 	);
 	i2c1.closeSync();
+	//return retval;
 }
+
+function sendServiceModeCommand(target,msg){
+//send 3 or more reset packages
+  for(let i=0; i <4; i++){
+	sendI2c(0x00,[0x00]);
+  }
+// send 5 or more writes
+  for(let i=0; i <7; i++){
+	sendI2c(target,msg);
+  }
+//send 6 or more Write or Reset packets.
+  for(let i=0; i <7; i++){
+	sendI2c(target,msg);
+  }
+// not part of spec - send another rest.
+sendI2c(0x00,[0x00]);
+// not part of spec.  non Service mode command exits service mode. Send light on.
+sendI2c(0x00, [0x9F]);
+}
+
+
+
 
 
 // *********************************************
