@@ -358,6 +358,12 @@ function sendCommand(addr,command){
    socket.emit("command",addr,command);
 }
 
+function SetAddr(addr,newAddr){
+    socket.emit("SetCV",addr,[0x00,0x00],newAddr);
+}
+
+
+
 
 // Utility Functions
 function LogMessage(msg){
@@ -377,7 +383,7 @@ function ThrottleChange(throttle){
         speed = Math.round(Math.abs(speed*126/100));
       } else {
         speed = Math.round(Math.abs(speed*126/100));
-        speed = (0x80^speed); //add 8th bit based on 
+        speed = (0x80^speed); //add 8th bit based on FWD motion.
       }
       throttle128(hexid,speed);
     } else {
@@ -397,9 +403,21 @@ function LightChange(light){
   console.log("Light: "+light.id+" change to value:"+light.value);
   var hexid = ThrottleDictionary[light.id.substring(0,9)];
   lights(light,hexid);
-  
+}
+
+function setAddress(){
+  var add1 = document.getElementById('oldAddress').value;
+  var add2 = document.getElementById('newAddress').value;
+  if ((add1.trim()!== "") && (add2.trim()!== "")){
+    SetAddr(add1,add2);
+    } else {
+      LogMessage(" Need at least an address and 1st byte.")
+
+    }
 
 }
+
+
 
 </script>
 
@@ -451,6 +469,12 @@ function LightChange(light){
             <label for="Byte1:">Byte1</label> <input type="text" id="ffByte1" name="Byte1" size = 8> <br/>
             <label for="Byte2:">Byte2</label> <input type="text" id="ffByte2" name="Byte2" size = 8>
           </form>
+        </div>
+        <hr style="width:75%"/>
+        <div id ="address_area">
+            <label for="oldAddress">Old Address:</label><input type="text" id="oldAddress" name="oldAddress" size="6"><br/>
+            <label for="newAddress">Old Address:</label><input type="text" id="newAddress" name="newAddress" size="6"><br/>
+            <button id = "setAddress" onclick="setAddress();">Set Address</button>
         </div>
 
 </div>
