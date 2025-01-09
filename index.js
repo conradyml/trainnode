@@ -86,7 +86,7 @@ socket.on('SetCV',function(target, addr, value) {
 	var cmd = 0x7C  // command starts with bits 0111 11AA for CV Direct write.  AA are the 2 most significant address bits.
 	addr[0] = (addr[0]&0x03);  // mask first 6 bits just in case. (expected to be 0's.)
 	cmd = (cmd^addr[0]);	// combine with cmd to complete cmd.
-	msg = [cmd,addr[1],parseInt(value),parseInt(value)]
+	msg = [cmd,addr[1],parseInt(value)];
 	sendServiceModeCommand(target,msg);
 });
 
@@ -99,7 +99,7 @@ socket.on('VerifyCV',function(target, addr, value) {
 	var cmd = 0x74  // command starts with bits 0111 01AA for CV Direct verify.  AA are the 2 most significant address bits.
 	addr[0] = (addr[0]&0x03);  // mask first 6 bits just in case. (expected to be 0's.)
 	cmd = (cmd^addr[0]);	// combine with cmd to complete cmd.
-	msg = [cmd,addr[1],parseInt(value),parseInt(value)]
+	msg = [cmd,addr[1],parseInt(value)];
 	sendServiceModeCommand(target,msg);
 });
 
