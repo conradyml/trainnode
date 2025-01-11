@@ -198,11 +198,11 @@ function setAddr(add1,add2){
 	  }
 	  //send 5 or more write packets.
 	  for(let i=0; i <6; i++){
-		sendI2c("78",[msg]);
+		sendI2c("78",[add2]);
 	  }
 	  //send 10 or more write or restet packets.
 	  for(let i=0; i <11; i++){
-		sendI2c("78",[msg]);
+		sendI2c("78",[add2]);
 	  }
 }
 
