@@ -182,27 +182,27 @@ sendI2c(0x00, [0x9F]);
 function setAddr(add1,add2){
 	//send 3 or more reset packages
 	for(let i=0; i <4; i++){
-		sendI2c(0x00,[0x00]);
+		sendI2c("00",[0x00]);
 	  }
 	// send 5 or more Page Preset Packets.
 	  for(let i=0; i <7; i++){
-		sendI2c(0x7d,[0x01]);
+		sendI2c("7d",[0x01]);
 	  }
 	//send 6 or more Reset packets.
 	  for(let i=0; i <8; i++){
-		sendI2c(0x00,[0x00]);
+		sendI2c("00",[0x00]);
 	  }
 	//send 3 more Reset packets.
 	  for(let i=0; i <4; i++){
-		sendI2c(0x00,[0x00]);
+		sendI2c("00",[0x00]);
 	  }
 	  //send 5 or more write packets.
 	  for(let i=0; i <6; i++){
-		sendI2c(0x78,[msg]);
+		sendI2c("78",[msg]);
 	  }
 	  //send 10 or more write or restet packets.
 	  for(let i=0; i <11; i++){
-		sendI2c(0x78,[msg]);
+		sendI2c("78",[msg]);
 	  }
 }
 
