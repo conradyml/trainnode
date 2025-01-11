@@ -358,8 +358,16 @@ function sendCommand(addr,command){
    socket.emit("command",addr,command);
 }
 
-function SetAddr(addr,newAddr){
-    socket.emit("SetCV",addr,[0x00,0x00],newAddr);
+function setAddress(addr,newAddr){
+  var add1 = document.getElementById('oldAddress').value;
+  var add2 = document.getElementById('newAddress').value;
+  if ((add1.trim()!== "") && (add2.trim()!== "")){
+    socket.emit("setAddr",add1,add2);
+    } else {
+      LogMessage(" Need two addresses.")
+
+    }
+    
 }
 
 
@@ -405,7 +413,7 @@ function LightChange(light){
   lights(light,hexid);
 }
 
-function setAddress(){
+/*function setAddress(){
   var add1 = document.getElementById('oldAddress').value;
   var add2 = document.getElementById('newAddress').value;
   if ((add1.trim()!== "") && (add2.trim()!== "")){
@@ -414,8 +422,7 @@ function setAddress(){
       LogMessage(" Need at least an address and 1st byte.")
 
     }
-
-}
+}*/
 
 
 
@@ -473,7 +480,7 @@ function setAddress(){
         <hr style="width:75%"/>
         <div id ="address_area">
             <label for="oldAddress">Old Address:</label><input type="text" id="oldAddress" name="oldAddress" size="6"><br/>
-            <label for="newAddress">Old Address:</label><input type="text" id="newAddress" name="newAddress" size="6"><br/>
+            <label for="newAddress">New Address:</label><input type="text" id="newAddress" name="newAddress" size="6"><br/>
             <button id = "setAddress" onClick="setAddress();">Set Address</button>
         </div>
 

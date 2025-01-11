@@ -77,7 +77,15 @@ socket.on('command',function(target,value) {
 	sendI2c(target,value);
 });
 
-socket.on('SetCV',function(target, addr, value) {
+socket.on('setAddr',function(target, addr) {
+
+	console.log("setAddr request received for address::"+target.toString()+" to address: "+addr.toString());
+	add1 =parseInt(target);
+	add2 =parseInt(addr);
+	setAddr(add1,add2);
+});
+
+socket.on('setCV',function(target, addr, value) {
 	// target is the REG entry for the locomotive.
 	// addr is 2 byte array, indicating the 10 bit address of the CV to be set.
 	// form should be 000000AA AAAAAAAA.
@@ -90,7 +98,7 @@ socket.on('SetCV',function(target, addr, value) {
 	sendServiceModeCommand(target,msg);
 });
 
-socket.on('VerifyCV',function(target, addr, value) {
+socket.on('verifyCV',function(target, addr, value) {
 	// target is the REG entry for the locomotive.
 	// addr is 2 byte array, indicating the 10 bit address of the CV to be set.
 	// form should be 000000AA AAAAAAAA.
@@ -158,11 +166,11 @@ function sendServiceModeCommand(target,msg){
 	sendI2c(0x00,[0x00]);
   }
 // send 5 or more writes
-  for(let i=0; i <7; i++){
+  for(let i=0; i <5; i++){
 	sendI2c(target,msg);
   }
 //send 6 or more Write or Reset packets.
-  for(let i=0; i <7; i++){
+  for(let i=0; i <6; i++){
 	sendI2c(target,msg);
   }
 // not part of spec - send another rest.
@@ -171,7 +179,32 @@ sendI2c(0x00,[0x00]);
 sendI2c(0x00, [0x9F]);
 }
 
-
+function setAddr(add1,add2){
+	//send 3 or more reset packages
+	for(let i=0; i <4; i++){
+		sendI2c(0x00,[0x00]);
+	  }
+	// send 5 or more Page Preset Packets.
+	  for(let i=0; i <7; i++){
+		sendI2c(0x7d,[0x01]);
+	  }
+	//send 6 or more Reset packets.
+	  for(let i=0; i <8; i++){
+		sendI2c(0x00,[0x00]);
+	  }
+	//send 3 more Reset packets.
+	  for(let i=0; i <4; i++){
+		sendI2c(0x00,[0x00]);
+	  }
+	  //send 5 or more write packets.
+	  for(let i=0; i <6; i++){
+		sendI2c(0x78,[msg]);
+	  }
+	  //send 10 or more write or restet packets.
+	  for(let i=0; i <11; i++){
+		sendI2c(0x78,[msg]);
+	  }
+}
 
 
 
