@@ -91,7 +91,9 @@ socket.on('setCV',function(target, addr, value) {
 	// form should be 000000AA AAAAAAAA.
 	// value is the byte value to set in that variable.
 	console.log(" SETCV request received with target:"+target.toString()+"address: "+addr.toString()+" and value:"+value.toString())
-	var cmd = 0x7C  // command starts with bits 0111 11AA for CV Direct write.  AA are the 2 most significant address bits.
+	//var cmd = 0x7C  // command starts with bits 0111 11AA for CV Direct write.  AA are the 2 most significant address bits.
+	var cmd = 0xEC  // command starts with bits 1110 11AA for CV Direct write.  AA are the 2 most significant address bits.
+	
 	addr[0] = (addr[0]&0x03);  // mask first 6 bits just in case. (expected to be 0's.)
 	cmd = (cmd^addr[0]);	// combine with cmd to complete cmd.
 	msg = [cmd,addr[1],parseInt(value)];
@@ -173,7 +175,7 @@ function sendServiceModeCommand(target,msg){
   for(let i=0; i <6; i++){
 	sendI2c(target,msg);
   }
-// not part of spec - send another rest.
+// not part of spec - send another reset.
 sendI2c(0x00,[0x00]);
 // not part of spec.  non Service mode command exits service mode. Send light on.
 sendI2c(0x00, [0x9F]);
