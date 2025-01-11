@@ -85,7 +85,7 @@ socket.on('setAddr',function(target, addr) {
 	setAddr(add1,add2);
 });
 
-socket.on('setCV',function(addr, value) {
+socket.on('setCV',function(target, addr, value) {
 	// target is the REG entry for the locomotive.
 	// addr is 2 byte array, indicating the 10 bit address of the CV to be set.
 	// form should be 000000AA AAAAAAAA.
@@ -97,7 +97,7 @@ socket.on('setCV',function(addr, value) {
 	addr[0] = (addr[0]&0x03);  // mask first 6 bits just in case. (expected to be 0's.)
 	cmd = (cmd^addr[0]);	// combine with cmd to complete cmd.
 	msg = [cmd,addr[1],parseInt(value)];
-	sendServiceModeCommand(cmd,msg);
+	sendServiceModeCommand(target,msg);
 });
 
 socket.on('verifyCV',function(target, addr, value) {
@@ -109,7 +109,7 @@ socket.on('verifyCV',function(target, addr, value) {
 	var cmd = 0x74  // command starts with bits 0111 01AA for CV Direct verify.  AA are the 2 most significant address bits.
 	addr[0] = (addr[0]&0x03);  // mask first 6 bits just in case. (expected to be 0's.)
 	cmd = (cmd^addr[0]);	// combine with cmd to complete cmd.
-	msg = [cmd,addr[1],parseInt(value)];
+	msg = [cmd,addr[1],parseInt(value, 16)];
 	sendServiceModeCommand(target,msg);
 });
 

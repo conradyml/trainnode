@@ -369,9 +369,10 @@ function setAddress(){
 }
 
 function setCV(){
+  var add1 = document.getElementById('oldAddress').value;
   var cvAddr = [0x00,0x00];
   var add2 = document.getElementById('newAddress').value;
-     socket.emit("setCV",cvAddr,add2);
+     socket.emit("setCV",add1,cvAddr,add2);
 }  
 
 
